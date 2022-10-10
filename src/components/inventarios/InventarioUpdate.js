@@ -28,10 +28,7 @@ export const InventarioUpdate = () => {
     const [marcas, setMarcas] = useState([]);
     const [tipos, setTipos] = useState([]);
     const [estadosEquipos, setEstadosEquipos] = useState([]);
-
-
-
-
+    
     const listarUsuarios = async () => {
         try {
             const { data } = await getUsuarios();
@@ -94,35 +91,38 @@ export const InventarioUpdate = () => {
 
     const handleOnChange = (event) => 
     {
-        
         const { name, value } = event.target;
         setInventario({ ...inventario, [name]: value }); 
     }
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        
-        
         try {
             Swal.fire({
                 allowOutsideClick: false,
                 text: 'Cargando...'
             });
             Swal.showLoading();
-            const  data = await editarInvetario(inventarioId, inventario);
-            console.log(data);
-            Swal.close();
-        } catch (error) {
-            console.log(error);
-            console.log(error.response.data)
-            Swal.close();
-            let mensaje;
-            if (error && error.response && error.response.data) {
-                mensaje = error.response.data;
+            const data = await editarInvetario(inventarioId, inventario);
+            if (data.status === 200) {
+               swal.fire({
+                   icon: 'success',
+                   title: 'Actualizar',
+                   text: 'Actualzacion exitosa',
+                   timer: 1500
+               });
+               window.location.href = "/inventarios";
             } else {
-                mensaje = 'Ocurrió un error, intente de nuevo';
+               Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'Error al actualizar',
+                    showConfirmButton: true,
+                }); 
             }
-            Swal.fire('Error', mensaje, 'error');
+        } catch (error) {
+            console.log(error)
+            Swal.fire('Error', error.data.data.error, 'error');
         }
     }
 
@@ -221,14 +221,11 @@ export const InventarioUpdate = () => {
                                                 name="usuario"
                                                 value={inventario.usuario}>
                                                 <option value=""> --Seleccione--</option>
-                                                {
-                                                    usuarios.map(usuario =>(
-                                                         <option key={usuario._id} value={usuario._id}>
-                                                            {usuario.nombre}
-                                                        </option>
-                                                ))
-                                                
-                                                }
+                                                { usuarios.map(usuario =>(
+                                                    <option key={usuario._id} value={usuario._id}>
+                                                        {usuario.nombre}
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -243,13 +240,11 @@ export const InventarioUpdate = () => {
                                                 name="marca"
                                                 value={inventario.marca}>
                                                 <option value=""> --Seleccione--</option>
-                                                {
-                                                    marcas.map(({ _id, nombre }) => {
-                                                        return <option key={_id} value={_id}>
-                                                            {nombre}
-                                                        </option>
-                                                    })
-                                                }
+                                                { marcas.map(marca => {
+                                                     <option key={marca._id} value={marca._id}>
+                                                         {marca.nombre}
+                                                     </option>
+                                                 ))}
                                             </select>
                                         </div>
                                     </div>
@@ -262,13 +257,11 @@ export const InventarioUpdate = () => {
                                                 name="tipoEquipo"
                                                 value={inventario.tipoEquipo}>
                                                 <option value=""> --Seleccione--</option>
-                                                {
-                                                    tipos.map(({ _id, nombre }) => {
-                                                        return <option key={_id} value={_id}>
-                                                            {nombre}
+                                                { tipos.map(tipo => {
+                                                        <option key={tipo._id} value={tipo._id}>
+                                                            {tipo.nombre}
                                                         </option>
-                                                    })
-                                                }
+                                                ))}
                                             </select>
                                         </div>
                                     </div>
@@ -281,29 +274,25 @@ export const InventarioUpdate = () => {
                                                 name="estadoEquipo"
                                                 value={inventario.estadoEquipo}>
                                                 <option value=""> --Seleccione--</option>
-                                                {
-                                                    estadosEquipos.map(({ _id, nombre }) => {
-                                                        return <option key={_id} value={_id}>
-                                                            {nombre}
+                                                { estadosEquipos.map(estado => {
+                                                        <option key={estado._id} value={estado._id}>
+                                                            {estado.nombre}
                                                         </option>
-                                                    })
-                                                }
+                                                 ))}
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div className='row'>
                                     <div className='col'>
-                                        <button className='btn btn-secondary'>Editar</button>
+                                        <button type="submit" className='btn btn-secondary'>Editar</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
-
                     </div>
                 </div>
             </div>
-
         </div>
     )
 }
